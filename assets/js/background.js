@@ -30,6 +30,10 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
+    if (closeTab != null) {
+        return;
+    }
+
     var url = new URL(tab.url);
     var nextLanguage;
 
