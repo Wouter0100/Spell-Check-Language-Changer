@@ -42,6 +42,17 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     setLanguage(nextLanguage);
 
     chrome.storage.sync.get({ websites: [] }, function(items) {
+
+        items.websites.forEach(function(website, index) {
+            if (website == null) {
+                return;
+            }
+
+            if (website.hostname == url.hostname) {
+               delete items.websites[index];
+            }
+        });
+
         var website = {};
         website.hostname = url.hostname;
         website.language = nextLanguage;
@@ -58,6 +69,10 @@ function checkTab(tabId) {
 
         chrome.storage.sync.get({ websites: [] }, function(items) {
             items.websites.forEach(function(website) {
+                if (website == null) {
+                    return;
+                }
+
                 if (website.hostname == url.hostname) {
                     setLanguage(website.language);
                 }
