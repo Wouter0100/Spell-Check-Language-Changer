@@ -3,6 +3,12 @@ var closeTabInterval;
 
 var currentLanguage;
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.type == 'update') {
+
+    }
+});
+
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status == 'complete') {
         if (tabId != null && tabId == closeTab) {
@@ -38,7 +44,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     var nextLanguage;
 
     if (currentLanguage == 'nl') {
-        nextLanguage = 'en_US';
+        nextLanguage = 'en-US';
     } else {
         nextLanguage = 'nl';
     }
