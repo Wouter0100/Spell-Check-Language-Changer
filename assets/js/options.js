@@ -177,6 +177,29 @@ $(function () {
         });
     });
 
+    $('.add button').click(function(e) {
+        var hostname = $(this).closest('.add').find('input');
+        var language = $(this).closest('.add').find('select');
+
+        if (hostname.val().trim().length == 0) {
+            showError('You didn\'t entered a hostname, damn you!');
+            return;
+        }
+
+        var website = {};
+        website.hostname = hostname.val();
+        website.language = language.val();
+
+        websites.push(website);
+
+        hostname.val('');
+
+        updateWebsites();
+        chrome.storage.sync.set({ websites: websites }, function() {
+            chrome.runtime.sendMessage({ type: 'update' });
+        });
+    });
+
     chrome.storage.sync.get({
         websites: [],
         languages: []
@@ -222,4 +245,10 @@ function updateWebsites() {
     });
 
     updateLanguages();
+}
+
+function showError(message) {
+    $('.alert-danger').stop().fadeOut(function() {
+       $(this).html('What did you tried? ' + message).fadeIn().delay(20000).fadeOut();
+    });
 }

@@ -16,13 +16,14 @@
     <div class="container">
         <div class="col-md-12">
             <h4>Spell Check Language Changer <small>- Options</small></h4>
+            <div class="alert alert-danger" role="alert" style="display: none;"></div>
         </div>
 
         <div class="col-md-6">
             <label for="languages">Enabled languages</label><br/>
             <select class="form-control" id="languages" multiple="multiple">
 
-            </select><br/>
+            </select><br/><br/>
             <small>1. Make sure these languages are also enabled on <a href="chrome://settings/languages" target="_blank">this</a> page!</small><br/>
             <small>2. When you unselect a language, all associated websites will being removed.</small>
         </div>
@@ -54,6 +55,8 @@
                     </tr>
                 </tbody>
             </table>
+            <small>1. Please make sure you enter a valid hostname, no HTTP(s):// or FTP://.</small><br/>
+            <small>2. We don't validate the hostname ;) (only for length).</small>
         </div>
     </div>
 </body>
