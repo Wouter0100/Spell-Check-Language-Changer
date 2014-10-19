@@ -58,13 +58,13 @@ chrome.browserAction.onClicked.addListener(function(tab) {
                 return;
             }
 
-            if (website.hostname == url.hostname) {
+            if (website.hostname == url.hostname.replace('www.', '')) {
                delete items.websites[index];
             }
         });
 
         var website = {};
-        website.hostname = url.hostname;
+        website.hostname = url.hostname.replace('www.', '');
         website.language = nextLanguage;
 
         items.websites.push(website);
@@ -83,7 +83,7 @@ function checkTab(tabId) {
                     return;
                 }
 
-                if (website.hostname == url.hostname) {
+                if (website.hostname == url.hostname.replace('www.', '')) {
                     setLanguage(website.language);
                 }
             });

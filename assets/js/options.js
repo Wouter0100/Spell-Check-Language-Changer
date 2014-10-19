@@ -181,13 +181,13 @@ $(function () {
         var hostname = $(this).closest('.add').find('input');
         var language = $(this).closest('.add').find('select');
 
-        if (hostname.val().trim().length == 0) {
+        if (hostname.val().replace('www.', '').trim().length == 0) {
             showError('You didn\'t entered a hostname, damn you!');
             return;
         }
 
         var website = {};
-        website.hostname = hostname.val();
+        website.hostname = hostname.val().replace('www.', '');
         website.language = language.val();
 
         websites.push(website);
