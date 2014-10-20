@@ -135,39 +135,46 @@ var languages = [
 ];
 
 var enabledLanguages;
+var defaultLanguage;
 var websites;
 
 $(function () {
 
-    languages.forEach(function (language) {
-        $('#languages').append('<option value="' + language.code + '">' + language.displayName + '</option>');
+    $.each(languages, function(index, language) {
+        $('#enabled_languages').append('<option value="' + language.code + '">' + language.displayName + '</option>');
     });
 
-    $('#languages').multiselect({
+    $('#enabled_languages').multiselect({
+        buttonWidth: '100%',
         onChange: function (option, checked, select) {
+            var language = $(option).val();
+
             if (checked) {
                 enabledLanguages.push($(option).val());
             } else {
-                enabledLanguages.splice(enabledLanguages.indexOf($(option).val()), 1);
+                enabledLanguages.splice(enabledLanguages.indexOf(language), 1);
+
+                websites = $.map(websites, function(website) {
+                    if (website.language == language) {
+                        return null;
+                    }
+
+                    return website;
+                });
             }
 
-            updateLanguages();
-            chrome.storage.sync.set({ languages: enabledLanguages }, function() {
-                chrome.runtime.sendMessage({ type: 'update' });
-            });
+            updateWebsites(); //also updates languages
+            setStorage();
         }
     });
 
-    $(window.document).on('click', '.remove', function(e) {
+    $(window.document).on('change', '.websites tr[data-hostname] select', function(e) {
         var hostname = $(this).closest('tr').data('hostname');
-        
-        websites.forEach(function(website, index) {
-            if (website == null) {
-                return;
-            }
+        var language = $(this).val();
 
+        $.each(websites, function(index, website) {
             if (website.hostname == hostname) {
-                delete websites[index];
+                website.language = language;
             }
         });
 
@@ -175,6 +182,25 @@ $(function () {
         chrome.storage.sync.set({ websites: websites }, function() {
             chrome.runtime.sendMessage({ type: 'update' });
         });
+    });
+
+    $(window.document).on('click', '.remove', function(e) {
+        var hostname = $(this).closest('tr').data('hostname');
+
+        websites = $.map(websites, function(website) {
+            if (website.hostname == hostname) {
+                return null;
+            }
+
+            return website;
+        });
+
+        updateWebsites();
+        setStorage();
+    });
+
+    $('#default_language').change(function(e) {
+        console.log($(this).val());
     });
 
     $('.add button').click(function(e) {
@@ -195,19 +221,11 @@ $(function () {
         hostname.val('');
 
         updateWebsites();
-        chrome.storage.sync.set({ websites: websites }, function() {
-            chrome.runtime.sendMessage({ type: 'update' });
-        });
+        setStorage();
     });
 
-    chrome.storage.sync.get({
-        websites: [],
-        languages: []
-    }, function (items) {
-        websites = items.websites;
-        enabledLanguages = items.languages;
-
-        $('#languages').multiselect('select', enabledLanguages);
+    getStorage(function() {
+        $('#enabled_languages').multiselect('select', enabledLanguages);
 
         updateWebsites();
     });
@@ -216,7 +234,7 @@ $(function () {
 function updateLanguages() {
     $('.languages-selected').html('');
 
-    languages.forEach(function (language) {
+    $.each(languages, function (index, language) {
         if (enabledLanguages.indexOf(language.code) !== -1) {
             $('.languages-selected').each(function() {
                 var isSelected = false;
@@ -236,7 +254,7 @@ function updateLanguages() {
 function updateWebsites() {
     $('.websites tr[data-hostname]').remove();
 
-    websites.forEach(function(website) {
+    $.each(websites, function(index, website) {
         if (website == null) {
             return;
         }
@@ -250,5 +268,27 @@ function updateWebsites() {
 function showError(message) {
     $('.alert-danger').stop().fadeOut(function() {
        $(this).html('What did you tried? ' + message).fadeIn().delay(20000).fadeOut();
+    });
+}
+
+function getStorage(callback) {
+    chrome.storage.sync.get({ websites: [], enabledLanguages: [], defaultLanguage: null }, function(items) {
+        websites = items.websites;
+        enabledLanguages = items.enabledLanguages;
+        defaultLanguage = items.defaultLanguage;
+
+        if (typeof callback != 'undefined') {
+            callback();
+        }
+    });
+}
+
+function setStorage(callback) {
+    chrome.storage.sync.set({ websites: websites, enabledLanguages: enabledLanguages, defaultLanguage: defaultLanguage }, function() {
+        chrome.runtime.sendMessage({ type: 'update' });
+
+        if (typeof callback != 'undefined') {
+            callback();
+        }
     });
 }

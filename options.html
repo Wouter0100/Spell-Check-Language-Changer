@@ -20,12 +20,17 @@
         </div>
 
         <div class="col-md-6">
-            <label for="languages">Enabled languages</label><br/>
-            <select class="form-control" id="languages" multiple="multiple">
+            <label for="enabled_languages">Enabled languages</label><br/>
+            <select class="form-control" id="enabled_languages" multiple="multiple">
 
             </select><br/><br/>
-            <small>1. Make sure these languages are also enabled on <a href="chrome://settings/languages" target="_blank">this</a> page!</small><br/>
-            <small>2. When you unselect a language, all associated websites will being removed.</small>
+            <label for="default_language">Default language</label><br/>
+            <select class="form-control languages-selected" id="default_language">
+
+            </select>
+            <br/>
+            <small>1. Make sure these enabled languages are also enabled on <a href="chrome://settings/languages" target="_blank">this</a> page!</small><br/>
+            <small>2. When you unselect a enabled language, all associated websites will being <strong>removed</strong>.</small>
         </div>
 
         <div class="col-md-6">

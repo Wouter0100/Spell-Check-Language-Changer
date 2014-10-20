@@ -2,9 +2,13 @@ var closeTabs = [];
 
 var currentLanguage;
 
+var websites;
+var enabledLanguages;
+var defaultLanguage;
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type == 'update') {
-
+        getStorage();
     }
 });
 
@@ -39,26 +43,21 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
     setLanguage(nextLanguage);
 
-    chrome.storage.sync.get({ websites: [] }, function(items) {
+    websites = $.map(websites, function(website) {
+        if (website.hostname == url.hostname.replace('www.', '')) {
+            return null;
+        }
 
-        items.websites.forEach(function(website, index) {
-            if (website == null) {
-                return;
-            }
-
-            if (website.hostname == url.hostname.replace('www.', '')) {
-               delete items.websites[index];
-            }
-        });
-
-        var website = {};
-        website.hostname = url.hostname.replace('www.', '');
-        website.language = nextLanguage;
-
-        items.websites.push(website);
-
-        chrome.storage.sync.set(items);
+        return website;
     });
+
+    var website = {};
+    website.hostname = url.hostname.replace('www.', '');
+    website.language = nextLanguage;
+
+    websites.push(website);
+
+    setStorage();
 });
 
 function checkTab(tabId) {
@@ -115,7 +114,29 @@ function closeTab(tabId) {
     }, 10);
 }
 
-setLanguage('nl');
+function getStorage(callback) {
+    chrome.storage.sync.get({ websites: [], enabledLanguages: [], defaultLanguage: null }, function(items) {
+        websites = items.websites;
+        enabledLanguages = items.enabledLanguages;
+        defaultLanguage = items.defaultLanguage;
+
+        if (typeof callback != 'undefined') {
+            callback();
+        }
+    });
+}
+
+function setStorage(callback) {
+    chrome.storage.sync.set({ websites: websites, enabledLanguages: enabledLanguages, defaultLanguage: defaultLanguage }, function() {
+        if (typeof callback != 'undefined') {
+            callback();
+        }
+    });
+}
+
+getStorage(function() {
+   //set default language
+});
 
 //Some prototype things, just to be lacy.
 Array.prototype.remove = function() {
