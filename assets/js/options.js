@@ -160,7 +160,7 @@ $(function () {
 
     $(window.document).on('click', '.remove', function(e) {
         var hostname = $(this).closest('tr').data('hostname');
-
+        
         websites.forEach(function(website, index) {
             if (website == null) {
                 return;
@@ -217,7 +217,7 @@ function updateLanguages() {
     $('.languages-selected').html('');
 
     languages.forEach(function (language) {
-        if (enabledLanguages.indexOf(language.code) != -1) {
+        if (enabledLanguages.indexOf(language.code) !== -1) {
             $('.languages-selected').each(function() {
                 var isSelected = false;
 

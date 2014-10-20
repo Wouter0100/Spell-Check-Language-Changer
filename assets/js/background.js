@@ -1,5 +1,4 @@
-var closeTab;
-var closeTabInterval;
+var closeTabs = [];
 
 var currentLanguage;
 
@@ -11,19 +10,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status == 'complete') {
-        if (tabId != null && tabId == closeTab) {
-
-            //Set interval to ensure the tab is being closed.
-            closeTabInterval = setInterval(function() {
-                chrome.tabs.remove(tabId, function() {
-                    if (!chrome.runtime.lastError) {
-                        closeTab = null;
-
-                        clearInterval(closeTabInterval);
-                    }
-                });
-            }, 10);
-
+        if (tabId != null && closeTabs.indexOf(tabId) !== -1) {
+            closeTab(tabId);
             return;
         }
 
@@ -36,7 +24,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-    if (closeTab != null) {
+    if (closeTabs.length != 0) {
         return;
     }
 
@@ -111,8 +99,32 @@ function openTab(language) {
     createProperties.type = 'popup';
 
     chrome.windows.create(createProperties, function(window) {
-        closeTab = window.tabs[0].id;
+        closeTabs.push(window.tabs[0].id);
     });
 }
 
+function closeTab(tabId) {
+    setTimeout(function() {
+        chrome.tabs.remove(tabId, function() {
+            if (!chrome.runtime.lastError) {
+                closeTabs.remove(tabId);
+            } else {
+                closeTab(tabId);
+            }
+        });
+    }, 10);
+}
+
 setLanguage('nl');
+
+//Some prototype things, just to be lacy.
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
