@@ -104,10 +104,10 @@ function openTab(language) {
     var createProperties = {};
     createProperties.url = 'chrome://settings-frame/languages?lang=' + language;
     createProperties.focused = false;
-    createProperties.width = 0;
-    createProperties.height = 0;
-    createProperties.left = 0;
-    createProperties.top = 0;
+    createProperties.width = 1;
+    createProperties.height = 1;
+    createProperties.left = 1;
+    createProperties.top = 1;
     createProperties.type = 'popup';
 
     chrome.windows.create(createProperties, function(window) {
