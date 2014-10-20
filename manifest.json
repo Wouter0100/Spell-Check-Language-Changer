@@ -10,7 +10,8 @@
 	"permissions": [
         "contentSettings",
 		"tabs",
-        "storage"
+        "storage",
+        "windows"
 	],
 
     "options_page": "options.html",

@@ -103,10 +103,15 @@ function setLanguage(language) {
 function openTab(language) {
     var createProperties = {};
     createProperties.url = 'chrome://settings-frame/languages?lang=' + language;
-    createProperties.active = false;
+    createProperties.focused = false;
+    createProperties.width = 0;
+    createProperties.height = 0;
+    createProperties.left = 0;
+    createProperties.top = 0;
+    createProperties.type = 'popup';
 
-    chrome.tabs.create(createProperties, function(tab) {
-        closeTab = tab.id;
+    chrome.windows.create(createProperties, function(window) {
+        closeTab = window.tabs[0].id;
     });
 }
 
