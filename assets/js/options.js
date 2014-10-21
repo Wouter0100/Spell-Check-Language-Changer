@@ -151,6 +151,10 @@ $(function () {
 
             if (checked) {
                 enabledLanguages.push($(option).val());
+
+                if (defaultLanguage == null) {
+                    defaultLanguage = language;
+                }
             } else {
                 enabledLanguages.splice(enabledLanguages.indexOf(language), 1);
 
@@ -161,6 +165,15 @@ $(function () {
 
                     return website;
                 });
+
+                // Check if default language is being removed..
+                if (language == defaultLanguage) {
+                    if (enabledLanguages.length != 0) {
+                        defaultLanguage = enabledLanguages[0]; // Just enable the first language from enabledLanguages.
+                    } else {
+                        defaultLanguage = null;
+                    }
+                }
             }
 
             updateWebsites(); //also updates languages
@@ -200,7 +213,11 @@ $(function () {
     });
 
     $('#default_language').change(function(e) {
-        console.log($(this).val());
+        var language = $(this).val();
+
+        defaultLanguage = language;
+
+        setStorage();
     });
 
     $('.add button').click(function(e) {
@@ -239,8 +256,16 @@ function updateLanguages() {
             $('.languages-selected').each(function() {
                 var isSelected = false;
 
+                // Check for each website language dropdown, if website is current language.
                 if (typeof $(this).closest('tr').data('language') != 'undefined') {
                     if (language.code == $(this).closest('tr').data('language')) {
+                        isSelected = true;
+                    }
+                }
+
+                // Check for default language dropdown
+                if ($(this).attr('id') == 'default_language') {
+                    if (language.code == defaultLanguage) {
                         isSelected = true;
                     }
                 }

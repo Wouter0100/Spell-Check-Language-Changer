@@ -8,7 +8,11 @@ var defaultLanguage;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type == 'update') {
-        getStorage();
+        getStorage(function() {
+            if (enabledLanguages.indexOf(currentLanguage) === -1) {
+                setLanguage(defaultLanguage);
+            }
+        });
     }
 });
 
@@ -28,20 +32,33 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-    if (closeTabs.length != 0) {
-        return;
-    }
-
     var url = new URL(tab.url);
     var nextLanguage;
 
-    if (currentLanguage == 'nl') {
-        nextLanguage = 'en-US';
+    var currentLanguageIndex = enabledLanguages.indexOf(currentLanguage);
+
+    if (currentLanguageIndex == -1) {
+        nextLanguage = defaultLanguage;
     } else {
-        nextLanguage = 'nl';
+        var nextLanguageIndex = currentLanguageIndex + 1;
+
+        if (typeof enabledLanguages[nextLanguageIndex] != 'undefined') {
+            nextLanguage = enabledLanguages[nextLanguageIndex];
+        } else {
+            if (typeof enabledLanguages[0] != 'undefined') {
+                nextLanguage = enabledLanguages[0];
+            } else {
+                nextLanguage = null;
+            }
+        }
     }
 
     setLanguage(nextLanguage);
+
+    if (nextLanguage == null) {
+        alert('Please enable a language within our Options menu.');
+        return;
+    }
 
     websites = $.map(websites, function(website) {
         if (website.hostname == url.hostname.replace('www.', '')) {
@@ -65,7 +82,7 @@ function checkTab(tabId) {
         var url = new URL(tab.url);
 
         chrome.storage.sync.get({ websites: [] }, function(items) {
-            items.websites.forEach(function(website) {
+            $.each(items.websites, function(index, website) {
                 if (website == null) {
                     return;
                 }
@@ -79,6 +96,14 @@ function checkTab(tabId) {
 }
 
 function setLanguage(language) {
+    // Reset everything when language is null, then in "disabled" mode
+    if (language == null) {
+        chrome.browserAction.setBadgeText({ text: '' });
+        currentLanguage = null;
+
+        return;
+    }
+
     if (currentLanguage != language) {
         openTab(language);
 
@@ -135,7 +160,7 @@ function setStorage(callback) {
 }
 
 getStorage(function() {
-   //set default language
+    setLanguage(defaultLanguage);
 });
 
 //Some prototype things, just to be lacy.
