@@ -56,7 +56,9 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     setLanguage(nextLanguage);
 
     if (nextLanguage == null) {
-        alert('Please enable a language within our Options menu.');
+        if (confirm('Please enable a language within our Options page. Click Ok to open our Options page.')) {
+            chrome.tabs.create({ url: 'options.html' });
+        }
         return;
     }
 
