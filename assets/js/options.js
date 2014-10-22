@@ -241,6 +241,12 @@ $(function () {
         setStorage();
     });
 
+    $(window).focus(function() {
+        getStorage(function() {
+            updateWebsites();
+        });
+    });
+
     getStorage(function() {
         $('#enabled_languages').multiselect('select', enabledLanguages);
 

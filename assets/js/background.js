@@ -22,9 +22,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             closeTab(tabId);
             return;
         }
-
-        checkTab(tabId);
     }
+
+    checkTab(tabId);
 });
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
