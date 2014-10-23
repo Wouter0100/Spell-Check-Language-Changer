@@ -31,6 +31,12 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
     checkTab(activeInfo.tabId);
 });
 
+chrome.windows.onFocusChanged.addListener(function(windowId) {
+    chrome.tabs.query({ active: true, windowId: windowId }, function(tab) {
+        checkTab(tab[0].id);
+    })
+});
+
 chrome.browserAction.onClicked.addListener(function(tab) {
     var url = new URL(tab.url);
     var nextLanguage;
