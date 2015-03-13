@@ -290,7 +290,7 @@ function updateWebsites() {
             return;
         }
 
-        $('.websites tr:last').before('<tr data-hostname="' + website.hostname + '" data-language="' + website.language + '"><td>' + website.hostname + '</td><td><select class="form-control languages-selected"></select></td><td><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove remove"></span></button></td></tr>')
+        $('.websites tr:last').before('<tr data-hostname="' + website.hostname + '" data-language="' + website.language + '"><td>' + website.hostname + '</td><td><select class="form-control languages-selected"></select></td><td><button type="button" class="btn btn-danger remove"><span class="glyphicon glyphicon-remove"></span></button></td></tr>')
     });
 
     updateLanguages();
